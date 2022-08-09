@@ -4,10 +4,12 @@ Hi, welcome to repository of **Elementor slider** 🎠.
 This repository contains script designed to modify behaviour of Elementor widget containing Woocomerce products.
 
 # Table of contents
-- [Introduction](#Introduction)
-- [The way it works](#The-way-it-works)
-- [Settings](#Settings)
-  - [List of changeable parameters](#List-of-changeable-parameters)
+- [Introduction](#introduction)
+- [Table of contents](#table-of-contents)
+- [The way it works](#the-way-it-works-)
+- [Settings](#settings)
+  - [List of changeable parameters](#list-of-changeable-parameters)
+- [Author](#author)
 
 # The way it works ⚙
 Whilst by design Elementor widget generates simple grid of elements.
