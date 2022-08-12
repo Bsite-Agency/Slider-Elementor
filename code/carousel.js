@@ -10,7 +10,7 @@ const carouselSilderModifier = () => {
   let pauseOnHover = true; // decide whether animation should stop when user hovers over
   let infiniteMode = true;
   let marqeeMode = true;
-  let hideNotVisible = false;
+  let hideNotVisible = true;
 
   function findSectionParent(ele){
     let parent = ele.parentNode;
@@ -22,7 +22,6 @@ const carouselSilderModifier = () => {
   }
   function removeNextSectionMargin(section){
     let siblingSection = section.nextElementSibling;
-    console.log(siblingSection, section);
     siblingSection.style.marginTop = "0";
   }
   function duplicateVisible(){
@@ -48,17 +47,20 @@ const carouselSilderModifier = () => {
     if (hideNotVisible) {
       for (var i = 0; i < modifiedSingleElements.length; i++) {
         //modifiedSingleElements[i].style.opacity = 0;
-        modifiedSingleElements[i].style.transition = "0.6s opacity ease-in";
+        modifiedSingleElements[i].style.transition = "0.6s opacity ease";
       }
       modifiedElementorWidgetContainer.addEventListener("scroll", hideNotVisibleHandler);
     }
     modifiedElementorWidgetContainer.style.flexWrap = "noWrap";
     modifiedElementorWidgetContainer.style.overflow = "hidden";
+    modifiedElementorWidgetContainer.style.boxSizing = "border-box";
     let modifiedElementorWidgetGap = window.getComputedStyle(modifiedSingleElements[0]).paddingLeft;
-
-    modifiedElementorWidget.children[0].style.marginLeft = "-" + modifiedElementorWidgetGap;
-    modifiedElementorWidget.children[0].style.marginRight = "-" + modifiedElementorWidgetGap;
-    modifiedElementorWidgetContainer.style.padding = `0 ${modifiedElementorWidgetGap} ${parseInt(modifiedElementorWidgetGap)*4}px`;
+    let maxMinusMargin = modifiedElementorWidget.getBoundingClientRect().left;
+    maxMinusMargin = Math.min(parseInt(maxMinusMargin), parseInt(modifiedElementorWidgetGap));
+    console.log(maxMinusMargin);
+    modifiedElementorWidget.children[0].style.marginLeft = `-${maxMinusMargin}px`;
+    modifiedElementorWidget.children[0].style.marginRight = `-${maxMinusMargin}px`;
+    modifiedElementorWidgetContainer.style.padding = `0 ${maxMinusMargin}px ${parseInt(modifiedElementorWidgetGap)*4}px`;
     if (infiniteMode) {
       duplicateVisible();
     }
@@ -104,7 +106,6 @@ const carouselSilderModifier = () => {
     return isVisible;
   }
   function moveProducts() {
-    console.log('move');
     let modifiedElementorWidgetContainer = modifiedElementorWidget.children[0].children[0];
     let modifiedSingleElements = modifiedElementorWidgetContainer.children;
     let step = parseInt(modifiedSingleElements[0].offsetWidth);
@@ -112,15 +113,28 @@ const carouselSilderModifier = () => {
       step = 1;
     }
     let chk = modifiedElementorWidgetContainer.scrollWidth - modifiedElementorWidgetContainer.offsetWidth - offset - step;
-    if (infiniteMode && chk < step && chk > -step) {
+    if (infiniteMode && (marqeeMode && chk == step) || (chk < step && chk > -step)) {
       setTimeout(()=>{
-        console.log(modifiedElementorWidgetContainer.offsetWidth);
+        if (hideNotVisible) {
+          for (var i = 0; i < modifiedSingleElements.length; i++) {
+            modifiedSingleElements[i].style.transitionDuration = "0s";
+          }
+        }
         offset = 0;
         modifiedElementorWidgetContainer.scrollTo({left: offset});
-        console.log(modifiedElementorWidgetContainer.offsetWidth);
       }, delay/2);
+      setTimeout(()=>{
+        if (hideNotVisible) {
+          for (var i = 0; i < modifiedSingleElements.length; i++) {
+            modifiedSingleElements[i].style.transitionDuration = "0.6s";
+          }
+        }
+      }, delay);
     }
     if (modifiedElementorWidgetContainer.scrollWidth - modifiedElementorWidgetContainer.offsetWidth - offset > 10){
+      offset += step;
+    }
+    else if (marqeeMode && modifiedElementorWidgetContainer.scrollWidth - modifiedElementorWidgetContainer.offsetWidth - offset > step) {
       offset += step;
     }
     else {
